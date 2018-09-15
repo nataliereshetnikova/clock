@@ -1,0 +1,20 @@
+html{
+	min-height:100%
+}
+.container .row{
+	min-height: 100%
+}
+#clock1, #clock2, #clock3{
+  font-family:Arial;
+  font-size:18px;
+  text-align: center;
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+}
+
+h1{
+    text-align: center;
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>Часы</title>
+	<meta http-equiv = "Content-Type" content = "text/html; charset = utf-8" >
+	<link rel = "stylesheet" type = "text/css" href = "style.css">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src = "script.js"></script>
+  </head>	
+  <body>
+		<div class="container">
+			<div class = "row">
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<h1>Malaga</h1>
+					<div id='clock1'> current time</div>
+					<canvas id='myCanvas1' width="300" height="300"></canvas>
+				</div>
+
+
+
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<h1>Kyiv</h1>
+					<div id='clock2'> current time</div>
+					<canvas id='myCanvas2' width="300" height="300"></canvas>
+
+					<form>
+						<label for="time">Choose a time: </label>
+						<input id="time" type="time" name="time" step="2">
+						<button type="submit">Submit</button>
+						<button type="Current time">Reset</button>
+					</form>
+
+
+				</div>
+
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<h1>London</h1>
+					<div id='clock3'>current time</div>
+					<canvas id='myCanvas3' width="300" height="300"></canvas>
+				</div>
+			</div>
+		</div>
+
+  </body>
+</html>
