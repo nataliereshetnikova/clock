@@ -25,9 +25,9 @@
 
 					<form>
 						<label for="time">Choose a time: </label>
-						<input id="time" type="time" name="time" step="2">
-						<button type="submit">Submit</button>
-						<button type="Current time">Reset</button>
+						<input id="userTime" type="datetime-local" name="time" step="2" required autofocus>
+						<button type="submit" id="submitButton">Submit</button>
+						<button type="reset" id="resetButton">Reset on current time</button>
 					</form>
 
 
