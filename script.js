@@ -1,7 +1,9 @@
 var canvasHTML;//variable for picking the canvas
 var userTime;//variable for picking the form where user put optional time
-var dUser; //variable for date from the form with user's optional date and time
+var userDate; //variable for date from the form with user's optional date and time
 var d; //variable for system time
+var digitalWatch=[{name:"clock1",timezone:"Europe/Madrid"},{name:"clock2",timezone:"Europe/Kiev"},{name:"clock3",timezone:"Europe/London"}]; //array of digital elements
+var analogueWatch=[{name:"myCanvas1",timezone:-1},{name:"myCanvas2",timezone:0},{name:"myCanvas3",timezone:-2}];//array of analogue elements
 
 function displayCanvas(d, timeDifference) {
     var contextHTML = canvasHTML.getContext('2d');
@@ -96,7 +98,7 @@ function displayCanvas(d, timeDifference) {
         contextHTML.fill();
         contextHTML.closePath();
 
-        //Рисуем стрелки
+        //Drawing the clock hands
         var lengthSeconds = radiusNum - 10;
         var lengthMinutes = radiusNum - 15;
         var lengthHour = lengthMinutes / 1.5;
@@ -105,20 +107,18 @@ function displayCanvas(d, timeDifference) {
 
     function systemTime(d) {
         //setting digital watch
-        document.getElementById("clock1").innerHTML = d.toLocaleTimeString('en-us', {timeZone: 'Europe/Madrid'});
-        document.getElementById("clock2").innerHTML = d.toLocaleTimeString('en-us', {timeZone: 'Europe/Kiev'});
-        document.getElementById("clock3").innerHTML = d.toLocaleTimeString('en-us', {timeZone: 'Europe/London'});
+        digitalWatch.forEach(function(element) {
+            document.getElementById(element.name).innerHTML = d.toLocaleTimeString('en-us', {timeZone: element.timezone});
+        });
         //setting analogue watch
-        canvasHTML = document.getElementById('myCanvas1');
-        displayCanvas(d, -1);
-        canvasHTML = document.getElementById('myCanvas2');
-        displayCanvas(d, 0);
-        canvasHTML = document.getElementById('myCanvas3');
-        displayCanvas(d, -2);
+        analogueWatch.forEach(function(element) {
+            canvasHTML = document.getElementById(element.name);
+            displayCanvas(d, element.timezone);
+        });
     }
 //setting user time
     function update() {
-        var date = new Date(sessionStorage.getItem("dUser"));
+        var date = new Date(sessionStorage.getItem("userDate"));
 
         var seconds = date.getSeconds();
         if (seconds < 60) {
@@ -139,24 +139,24 @@ function displayCanvas(d, timeDifference) {
                 }
             }
         }
-        dUser = new Date(date);
-        sessionStorage.setItem("dUser", dUser);
+        userDate = new Date(date);
+        sessionStorage.setItem("userDate", userDate);
     }
 
     window.onload = function () {
         document.getElementById("submitButton").addEventListener("click", function () {
             userTime = document.getElementById("userTime");
-            dUser = new Date(userTime.value);
-            sessionStorage.setItem("dUser", dUser);
+            userDate = new Date(userTime.value);
+            sessionStorage.setItem("userDate", userDate);
         });
         document.getElementById("resetButton").addEventListener("click", function () {
             sessionStorage.clear();
         });
         window.setInterval(
             function () {
-                if (sessionStorage.getItem("dUser") != null) {
+                if (sessionStorage.getItem("userDate") != null) {
                     update();
-                    systemTime(new Date(sessionStorage.getItem("dUser")));
+                    systemTime(new Date(sessionStorage.getItem("userDate")));
                 }
                 else {
                     d = new Date();
