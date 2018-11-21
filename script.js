@@ -1,16 +1,15 @@
 var canvasHTML;//variable for picking the canvas
 var userTime;//variable for picking the form where user put optional time
 var userDate; //variable for date from the form with user's optional date and time
-var d; //variable for system time
 var digitalWatch=[{name:"clock1",timezone:"Europe/Madrid"},{name:"clock2",timezone:"Europe/Kiev"},{name:"clock3",timezone:"Europe/London"}]; //array of digital elements
 var analogueWatch=[{name:"myCanvas1",timezone:-1},{name:"myCanvas2",timezone:0},{name:"myCanvas3",timezone:-2}];//array of analogue elements
 
-function displayCanvas(d, timeDifference) {
+function displayCanvas(systemDateObject, timeDifference) {
     var contextHTML = canvasHTML.getContext('2d');
     contextHTML.strokeRect(0, 0, canvasHTML.width, canvasHTML.height);
-    var t_sec = 6 * d.getSeconds();                           //determine the angle for the seconds
-    var t_min = 6 * (d.getMinutes() + (1 / 60) * d.getSeconds()); //determine the angle for the minutes
-    var t_hour = 30 * (d.getHours() + timeDifference + (1 / 60) * d.getMinutes()); //determine the angle for the hours
+    var t_sec = 6 * systemDateObject.getSeconds();                           //determine the angle for the seconds
+    var t_min = 6 * (systemDateObject.getMinutes() + (1 / 60) * systemDateObject.getSeconds()); //determine the angle for the minutes
+    var t_hour = 30 * (systemDateObject.getHours() + timeDifference + (1 / 60) * systemDateObject.getMinutes()); //determine the angle for the hours
     //drawing clock
     var radiusClock = canvasHTML.width / 2 - 10;
     var xCenterClock = canvasHTML.width / 2;
@@ -105,62 +104,45 @@ function displayCanvas(d, timeDifference) {
     }
 }
 
-    function systemTime(d) {
+    function systemTime(systemDateObject) {
         //setting digital watch
         digitalWatch.forEach(function(element) {
-            document.getElementById(element.name).innerHTML = d.toLocaleTimeString('en-us', {timeZone: element.timezone});
+            document.getElementById(element.name).innerHTML = systemDateObject.toLocaleTimeString('en-us', {timeZone: element.timezone});
         });
         //setting analogue watch
         analogueWatch.forEach(function(element) {
             canvasHTML = document.getElementById(element.name);
-            displayCanvas(d, element.timezone);
+            displayCanvas(systemDateObject, element.timezone);
         });
     }
-//setting user time
-    function update() {
-        var date = new Date(sessionStorage.getItem("userDate"));
 
-        var seconds = date.getSeconds();
-        if (seconds < 60) {
-            seconds = seconds + 1;
-            date.setSeconds(seconds);
-        }
-        else {
-            var minutes = date.getMinutes();
-            if (minutes < 60) {
-                minutes = minutes + 1;
-                date.setMinutes(minutes);
-            }
-            else {
-                var hours = date.getHours();
-                if (hours < 12) {
-                    hours = hours + 1;
-                    date.setHours(hours);
-                }
-            }
-        }
-        userDate = new Date(date);
-        sessionStorage.setItem("userDate", userDate);
+    function getNewDate(systemDateObject){
+        var timeDifference = sessionStorage.getItem("userTimeDifference");
+        var newDateObj = moment(systemDateObject).add(timeDifference, 's').toDate();
+        return newDateObj;
     }
-
     window.onload = function () {
         document.getElementById("submitButton").addEventListener("click", function () {
             userTime = document.getElementById("userTime");
+            //save into storage time difference between time, setting by user and current time in seconds
             userDate = new Date(userTime.value);
-            sessionStorage.setItem("userDate", userDate);
+            var systemDateObject = new Date();
+            var userTimeDifference = (userDate.getTime() - systemDateObject.getTime())/1000;
+            sessionStorage.setItem("userTimeDifference", userTimeDifference);
         });
         document.getElementById("resetButton").addEventListener("click", function () {
             sessionStorage.clear();
         });
         window.setInterval(
             function () {
-                if (sessionStorage.getItem("userDate") != null) {
-                    update();
-                    systemTime(new Date(sessionStorage.getItem("userDate")));
+                var systemDateObject = new Date();
+                if (sessionStorage.getItem("userTimeDifference") != null) {
+                    //if there is a userDate, update systemTime with a date that is corrected on getNewDate() function
+                    var userDateObject = getNewDate(systemDateObject);
+                    systemTime(userDateObject);
                 }
                 else {
-                    d = new Date();
-                    systemTime(d);
+                    systemTime(systemDateObject);
                 }
             }
             , 1000);
