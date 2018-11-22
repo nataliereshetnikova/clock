@@ -4,6 +4,21 @@ var userDate; //variable for date from the form with user's optional date and ti
 var digitalWatch=[{name:"clock1",timezone:"Europe/Madrid"},{name:"clock2",timezone:"Europe/Kiev"},{name:"clock3",timezone:"Europe/London"}]; //array of digital elements
 var analogueWatch=[{name:"myCanvas1",timezone:-1},{name:"myCanvas2",timezone:0},{name:"myCanvas3",timezone:-2}];//array of analogue elements
 
+Date.prototype.getUnixTime = function()
+    {
+        return this.getTime()/1000|0
+    };
+    if(!Date.now) {
+        Date.now = function()
+        {
+            return new Date();
+        }
+    }
+Date.time = function()
+    {
+        return Date.now().getUnixTime();
+    }
+
 function displayCanvas(systemDateObject, timeDifference) {
     var contextHTML = canvasHTML.getContext('2d');
     contextHTML.strokeRect(0, 0, canvasHTML.width, canvasHTML.height);
@@ -118,7 +133,7 @@ function displayCanvas(systemDateObject, timeDifference) {
 
     function getNewDate(systemDateObject){
         var timeDifference = sessionStorage.getItem("userTimeDifference");
-        var newDateObj = moment(systemDateObject).add(timeDifference, 's').toDate();
+        var newDateObj = new Date((systemDateObject.getUnixTime() + parseInt(timeDifference))*1000);
         return newDateObj;
     }
     window.onload = function () {
@@ -127,7 +142,7 @@ function displayCanvas(systemDateObject, timeDifference) {
             //save into storage time difference between time, setting by user and current time in seconds
             userDate = new Date(userTime.value);
             var systemDateObject = new Date();
-            var userTimeDifference = (userDate.getTime() - systemDateObject.getTime())/1000;
+            var userTimeDifference = (userDate.getUnixTime() - systemDateObject.getUnixTime());
             sessionStorage.setItem("userTimeDifference", userTimeDifference);
         });
         document.getElementById("resetButton").addEventListener("click", function () {
